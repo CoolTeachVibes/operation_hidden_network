@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light" />
+<title>Operation Hidden Network | Group Dynamics Investigation Unit</title>
+<style>
+:root{
+  --navy:#0d2238;
+  --navy-2:#163a59;
+  --slate:#465867;
+  --cream:#f6f0e5;
+  --paper:#fffdf8;
+  --gold:#c6a15b;
+  --teal:#2c827f;
+  --teal-2:#67aaa6;
+  --red:#b34a4a;
+  --green:#3f7e64;
+  --ink:#17212b;
+  --muted:#6e7882;
+  --line:#d8d0c2;
+  --shadow:0 14px 35px rgba(13,34,56,.16);
+  --radius:18px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 15% 8%, rgba(198,161,91,.13), transparent 24rem),
+    radial-gradient(circle at 90% 10%, rgba(44,130,127,.12), transparent 22rem),
+    linear-gradient(180deg,#e9eef2 0%,#f5f2ea 65%,#ece8df 100%);
+  min-height:100vh;
+}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:3px solid #6ec8ff; outline-offset:3px}
+a{color:inherit}
+.hidden{display:none!important}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* START SCREEN */
+#startScreen{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:26px;
+  position:relative;
+  overflow:hidden;
+}
+#startScreen::before,#startScreen::after{
+  content:"";
+  position:absolute;
+  border:1px solid rgba(255,255,255,.28);
+  border-radius:50%;
+  pointer-events:none;
+}
+#startScreen::before{width:520px;height:520px;left:-170px;top:-160px}
+#startScreen::after{width:640px;height:640px;right:-240px;bottom:-240px}
+.start-card{
+  width:min(980px,100%);
+  background:linear-gradient(145deg,rgba(13,34,56,.97),rgba(22,58,89,.96));
+  color:#fff;
+  border-radius:28px;
+  box-shadow:0 30px 80px rgba(13,34,56,.34);
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:1.18fr .82fr;
+}
+.start-hero{padding:48px 48px 42px;position:relative}
+.classified{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:8px 12px;border:1px solid rgba(198,161,91,.8);color:#f4dca8;
+  border-radius:999px;text-transform:uppercase;font-size:.78rem;letter-spacing:.16em;font-weight:800;
+}
+.start-hero h1{font-family:Georgia,serif;font-size:clamp(2.4rem,5vw,5rem);line-height:.94;margin:24px 0 10px;letter-spacing:-.04em}
+.start-hero .subtitle{color:#cfe2ef;font-weight:800;letter-spacing:.09em;text-transform:uppercase;margin-bottom:26px}
+.mission-copy{font-size:1.08rem;line-height:1.65;color:#eaf1f6;max-width:600px}
+.mission-copy strong{color:#ffd990}
+.start-form{background:var(--cream);color:var(--ink);padding:42px;display:flex;flex-direction:column;justify-content:center;gap:17px}
+.start-form h2{font-family:Georgia,serif;color:var(--navy);margin:0 0 4px;font-size:1.8rem}
+.field label{display:block;font-size:.8rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:var(--slate);margin-bottom:7px}
+.field input,.field textarea,.field select{
+  width:100%;padding:13px 14px;border-radius:12px;border:1px solid #c6c1b6;background:#fff;color:var(--ink)
+}
+.field textarea{min-height:105px;resize:vertical}
+.btn{
+  border:none;border-radius:12px;padding:12px 16px;font-weight:850;letter-spacing:.015em;
+  transition:.18s ease;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none
+}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.03)}
+.btn-primary{background:var(--gold);color:#17212b;box-shadow:0 9px 18px rgba(198,161,91,.24)}
+.btn-navy{background:var(--navy);color:#fff}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-red{background:var(--red);color:#fff}
+.btn-ghost{background:transparent;border:1px solid rgba(13,34,56,.22);color:var(--navy)}
+.btn-soft{background:#edf5f5;color:#195a58;border:1px solid #bcd9d7}
+.btn-sm{padding:8px 11px;border-radius:10px;font-size:.86rem}
+.start-form .btn{margin-top:4px;padding:14px 18px}
+.start-note{font-size:.8rem;color:var(--muted);line-height:1.45}
+
+/* APP SHELL */
+#app{min-height:100vh}
+.topbar{
+  background:rgba(13,34,56,.98);color:#fff;position:sticky;top:0;z-index:30;
+  box-shadow:0 8px 25px rgba(13,34,56,.18)
+}
+.topbar-inner{max-width:1500px;margin:auto;padding:12px 20px;display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center}
+.brand{display:flex;align-items:center;gap:12px;min-width:230px}
+.brand-mark{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--gold),#ead19b);color:var(--navy);font-weight:1000}
+.brand-title{font-weight:950;line-height:1}.brand-title small{display:block;font-size:.68rem;color:#b8c8d5;letter-spacing:.09em;margin-top:5px}
+.progress-zone{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center}
+.progress-wrap{height:10px;background:rgba(255,255,255,.14);border-radius:999px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--teal-2),var(--gold));transition:.3s}
+.status-mini{font-size:.78rem;color:#d8e6ee;white-space:nowrap}
+
+
+.app-body{max-width:1500px;margin:0 auto;padding:18px 20px 90px}
+.nav-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px}
+.nav-tab{padding:12px 10px;border-radius:12px;border:1px solid #ccd4d9;background:rgba(255,255,255,.75);font-weight:900;color:var(--navy);position:relative}
+.nav-tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.nav-tab .dot{width:7px;height:7px;border-radius:50%;background:#aeb9c1;display:inline-block;margin-left:6px}.nav-tab.done .dot{background:#76c39c}
+
+.case-panel{display:none}.case-panel.active{display:block}
+.case-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;background:linear-gradient(145deg,#fff,#f8f3e8);border:1px solid #dad3c5;border-radius:18px;padding:22px;box-shadow:var(--shadow);margin-bottom:16px}
+.case-kicker{text-transform:uppercase;letter-spacing:.15em;color:var(--teal);font-weight:900;font-size:.74rem}
+.case-head h2{margin:5px 0 5px;font-family:Georgia,serif;color:var(--navy);font-size:clamp(1.65rem,3vw,2.5rem)}
+.case-context{color:var(--muted);font-weight:700}
+.case-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+
+.stage-grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+.stack{display:grid;gap:14px}
+.card{background:rgba(255,255,255,.92);border:1px solid #d5d9dc;border-radius:var(--radius);padding:20px;box-shadow:0 10px 25px rgba(15,40,60,.08)}
+.card h3{font-family:Georgia,serif;color:var(--navy);margin:0 0 10px;font-size:1.35rem}.card h4{margin:14px 0 7px;color:var(--navy)}
+.stage-label{display:inline-flex;gap:8px;align-items:center;text-transform:uppercase;letter-spacing:.12em;font-size:.7rem;color:var(--teal);font-weight:950;margin-bottom:8px}
+.stage-number{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#e8f4f3;color:var(--teal);font-size:.7rem}
+.case-brief{background:linear-gradient(180deg,#fffdf8,#f6f0e5);border-color:#dfd2bc}
+.case-brief blockquote{margin:12px 0 0;padding:13px 16px;background:#fff;border-left:4px solid var(--gold);border-radius:0 12px 12px 0;font-family:Georgia,serif;color:#3d4650}
+.muted{color:var(--muted)}
+.microcopy{font-size:.86rem;color:var(--muted);line-height:1.45}
+.question{margin-top:12px}.question-title{font-weight:900;color:var(--navy);margin-bottom:10px}
+.option-grid{display:grid;gap:9px}.option{display:flex;gap:10px;align-items:flex-start;padding:11px 12px;border:1px solid #d7dce0;border-radius:12px;background:#fbfcfc}.option:hover{background:#f4f8f8}.option input{margin-top:3px}
+.feedback{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:.9rem;line-height:1.45;display:none}.feedback.show{display:block}.feedback.good{background:#e9f5ee;border:1px solid #b8d9c5;color:#245d44}.feedback.warn{background:#fff4df;border:1px solid #ebcf97;color:#785820}.feedback.info{background:#eaf3f7;border:1px solid #c3d8e1;color:#2b5266}
+
+.evidence-locker{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.evidence-card{border:1px dashed #b9c0c6;border-radius:14px;padding:15px;background:#f8fafb;position:relative;overflow:hidden}.evidence-card.locked::after{content:"LOCKED";position:absolute;inset:0;display:grid;place-items:center;background:rgba(13,34,56,.9);color:#fff;font-weight:950;letter-spacing:.16em}.stamp{display:inline-block;padding:5px 8px;border-radius:7px;border:2px solid currentColor;font-size:.67rem;font-weight:950;letter-spacing:.1em;transform:rotate(-2deg);text-transform:uppercase}.stamp.obs{color:#2e668f}.stamp.interview{color:#7a5a8e}.stamp.network{color:#277d68}.stamp.inference{color:#9c7030}.stamp.insufficient{color:#9e4c4c}.stamp.verified{color:#3f7e64}
+.log-table{width:100%;border-collapse:collapse;margin-top:10px}.log-table th,.log-table td{padding:9px;border-bottom:1px solid #e1e4e6;text-align:left}.log-table th{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--slate)}
+.timeline{display:grid;gap:9px}.timeline-item{display:grid;grid-template-columns:70px 1fr;gap:10px;padding:10px;border:1px solid #d9dde0;border-radius:12px;background:#fff}.timeline-time{font-weight:950;color:var(--teal)}
+
+.tool-select{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.tool-btn{border:1px solid #ccd7dc;background:#f8fbfb;border-radius:14px;padding:15px;text-align:left;min-height:110px}.tool-btn strong{display:block;color:var(--navy);font-size:1rem}.tool-btn small{display:block;margin-top:6px;color:var(--muted);line-height:1.35}.tool-btn.selected{border:2px solid var(--teal);background:#eaf6f5}
+.interview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.person-card{border:1px solid #d3d9dd;border-radius:14px;padding:14px;background:#fff;position:relative}.person-card button{width:100%}.quote{margin-top:9px;padding:10px;background:#f7f2e8;border-radius:10px;font-family:Georgia,serif;line-height:1.45}.person-card.disabled{opacity:.55}
+
+.side-panel{position:sticky;top:98px;display:grid;gap:14px}.side-card{background:#0f2942;color:#fff;border-radius:18px;padding:18px;box-shadow:var(--shadow)}.side-card h3{margin:0 0 10px;font-family:Georgia,serif}.side-card p,.side-card li{color:#d7e3eb;line-height:1.5}.case-checks{display:grid;gap:8px}.case-check{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.08);border-radius:10px;padding:8px 10px;font-size:.86rem}.check-indicator{width:18px;height:18px;border-radius:50%;border:2px solid #7894a8;display:grid;place-items:center;font-size:.7rem}.case-check.complete .check-indicator{background:#6fc096;border-color:#6fc096;color:#06271a}
+
+.tag-grid{display:flex;flex-wrap:wrap;gap:7px}.tag{border:1px solid #ccd6db;background:#fff;padding:8px 10px;border-radius:999px;font-size:.82rem}.tag.active{background:#e4f3f2;border-color:#77b8b5;color:#165c59;font-weight:800}
+
+.sociogram-wrap{background:linear-gradient(180deg,#f6fafb,#eef3f4);border:1px solid #cfdadd;border-radius:16px;padding:10px;overflow:hidden}.sociogram{width:100%;height:420px;display:block}.edge{stroke:#6b7f8d;stroke-width:2.2;opacity:.6}.edge.pref{stroke:#2c827f}.edge.bridge{stroke:#c6a15b;stroke-width:3}.node circle{fill:#fff;stroke:#0d2238;stroke-width:2}.node text{font-size:12px;font-weight:800;fill:#0d2238;text-anchor:middle;dominant-baseline:middle;pointer-events:none}.node:hover circle,.node:focus circle{fill:#f3ddae;stroke:#8e6f34}.node .halo{fill:transparent;stroke:#2c827f;stroke-dasharray:5 5;stroke-width:2;opacity:0}.node:hover .halo,.node:focus .halo{opacity:1}.network-tooltip{position:absolute;pointer-events:none;background:#0d2238;color:#fff;padding:8px 10px;border-radius:8px;font-size:.8rem;box-shadow:var(--shadow);z-index:8;max-width:210px}.svg-holder{position:relative}
+
+.report-shell{display:grid;gap:16px}.report-actions{display:flex;flex-wrap:wrap;gap:9px}.report-paper{background:#fff;border:1px solid #d7dadc;box-shadow:0 20px 55px rgba(12,31,46,.15);border-radius:18px;padding:36px;max-width:1000px;margin:auto}.report-title{text-align:center;border-bottom:2px solid var(--navy);padding-bottom:18px;margin-bottom:18px}.report-title h2{font-family:Georgia,serif;color:var(--navy);font-size:2.2rem;margin:0}.report-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.meta-box{background:#f3f6f7;border-radius:10px;padding:10px}.meta-box small{display:block;text-transform:uppercase;font-size:.65rem;font-weight:900;color:var(--muted);letter-spacing:.08em}.report-case{border-top:1px solid #dfe3e5;margin-top:22px;padding-top:18px}.report-case h3{font-family:Georgia,serif;color:var(--navy)}.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.report-item{padding:10px;border:1px solid #e1e4e6;border-radius:10px;background:#fbfcfc}.report-item strong{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:5px}.principle{margin:24px 0;padding:18px;text-align:center;border:2px solid var(--gold);background:#fff9ec;border-radius:14px;font-family:Georgia,serif;font-size:1.15rem;line-height:1.6}
+
+/* Modals, notebook, toast */
+.modal-backdrop{position:fixed;inset:0;background:rgba(4,17,29,.66);display:none;align-items:center;justify-content:center;padding:18px;z-index:80}.modal-backdrop.show{display:flex}.modal{background:#fff;border-radius:20px;max-width:980px;width:100%;max-height:88vh;overflow:auto;box-shadow:0 35px 100px rgba(0,0,0,.34)}.modal-head{position:sticky;top:0;background:#fff;border-bottom:1px solid #e0e4e6;padding:17px 20px;display:flex;justify-content:space-between;align-items:center;z-index:2}.modal-body{padding:20px}.toolkit-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.toolkit-card{border:1px solid #d8dde0;border-radius:15px;padding:16px;background:#f9fbfb}.toolkit-card h3{font-family:Georgia,serif;color:var(--navy)}
+.close-x{width:38px;height:38px;border-radius:50%;border:1px solid #d3dade;background:#fff;font-size:1.2rem}
+.notebook{position:fixed;right:0;top:0;height:100vh;width:min(430px,100%);background:#fff;z-index:90;box-shadow:-20px 0 45px rgba(0,0,0,.2);transform:translateX(105%);transition:.25s ease;display:flex;flex-direction:column}.notebook.open{transform:translateX(0)}.notebook-head{background:var(--navy);color:#fff;padding:18px;display:flex;justify-content:space-between;align-items:center}.notebook-body{padding:18px;display:flex;flex-direction:column;gap:12px;flex:1}.notebook textarea{flex:1;min-height:300px;resize:none;border:1px solid #cad3d8;border-radius:14px;padding:14px;line-height:1.5}
+.floating-tools{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:8px;z-index:55}.fab{border:none;border-radius:999px;background:var(--navy);color:#fff;padding:11px 14px;font-weight:850;box-shadow:0 10px 25px rgba(13,34,56,.25)}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,30px);background:#0d2238;color:#fff;padding:11px 15px;border-radius:12px;opacity:0;pointer-events:none;transition:.22s;z-index:120;box-shadow:var(--shadow);max-width:min(600px,90vw);text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}
+.glossary{border-bottom:1px dotted currentColor;cursor:help;font-weight:750}
+.facilitator-box{background:#fff4df;border:1px solid #e5c37b;border-radius:14px;padding:14px;margin-top:12px}
+
+.complete-banner{background:linear-gradient(135deg,#e7f4ed,#f7fcf9);border:1px solid #b9d8c7;border-radius:14px;padding:13px;display:none}.complete-banner.show{display:block}
+
+@media(max-width:1050px){
+  .start-card{grid-template-columns:1fr}.start-form{padding:30px}.stage-grid{grid-template-columns:1fr}.side-panel{position:static;grid-template-columns:repeat(2,1fr)}.topbar-inner{grid-template-columns:1fr auto}.progress-zone{grid-column:1/-1;order:3}.brand{min-width:0}.toolkit-cards{grid-template-columns:1fr}.report-meta{grid-template-columns:1fr 1fr}.sociogram{height:380px}
+}
+@media(max-width:700px){
+  .topbar-inner{padding:9px 12px;gap:10px}.brand-title small{display:none}.brand-mark{width:34px;height:34px}.app-body{padding:12px 12px 90px}.nav-tabs{grid-template-columns:repeat(2,1fr)}.nav-tabs .nav-tab:last-child{grid-column:1/-1}.case-head{flex-direction:column;padding:17px}.case-actions{justify-content:flex-start}.evidence-locker,.interview-grid,.tool-select,.report-grid{grid-template-columns:1fr}.side-panel{grid-template-columns:1fr}.report-paper{padding:20px}.report-meta{grid-template-columns:1fr}.start-hero{padding:34px 28px}.start-form{padding:25px}.timeline-item{grid-template-columns:58px 1fr}.floating-tools{right:12px;bottom:12px}.fab{font-size:.8rem}.sociogram{height:340px}
+}
+@media print{
+  body{background:#fff!important}
+  .topbar,.nav-tabs,.case-panel:not(#reportPanel),.floating-tools,.report-actions,.case-actions,.side-panel,.facilitator-box,#startScreen{display:none!important}
+  #app{display:block!important}.case-panel#reportPanel{display:block!important}.app-body{padding:0;max-width:none}.report-paper{box-shadow:none;border:none;border-radius:0;max-width:none;padding:0}.report-case{break-inside:avoid}.report-title{margin-top:0}
+}
+</style>
+</head>
+<body>
+
+<section id="startScreen" aria-labelledby="startTitle">
+  <div class="start-card">
+    <div class="start-hero">
+      <span class="classified">● Confidential Training File</span>
+      <h1 id="startTitle">OPERATION<br>HIDDEN NETWORK</h1>
+      <div class="subtitle">Group Dynamics Investigation Unit</div>
+      <div class="mission-copy">
+        <p><strong>Four groups. Four mysteries. Forty minutes.</strong><br>Your job is not to judge people. Your job is to analyze evidence.</p>
+        <p>Who speaks? Who stays silent? Who follows whom? Who works together? Who is left outside? What people say and what they actually do may tell different stories.</p>
+        <p><strong>OBSERVE. MAP. ASK. ANALYZE THE EVIDENCE.</strong></p>
+      </div>
+    </div>
+    <form class="start-form" id="startForm">
+      <h2>Investigator Registration</h2>
+      <div class="field"><label for="investigatorName">Investigator Name *</label><input id="investigatorName" autocomplete="name" required placeholder="Full name"></div>
+      <div class="field"><label for="groupClass">Group / Class</label><input id="groupClass" placeholder="e.g., High-Performance Team Administration"></div>
+      <div class="field"><label for="teamName">Team Name</label><input id="teamName" placeholder="Optional investigation team name"></div>
+      <div class="field"><label for="investigatorPassword">Create / Enter Password *</label><input id="investigatorPassword" type="password" autocomplete="current-password" required placeholder="Create a password to save progress"></div>
+      <button class="btn btn-primary" id="loginButton" type="submit">ENTER INVESTIGATION HQ →</button>
+      <div class="start-note">Your answers are saved on this device. Use your password to return and continue your investigation later. No student data is sent to a remote database.</div>
+    </form>
+  </div>
+</section>
+
+<div id="app" class="hidden">
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark">G</div>
+      <div class="brand-title">GDIU <small>GROUP DYNAMICS INVESTIGATION UNIT</small></div>
+    </div>
+    <div class="progress-zone" aria-label="Overall investigation progress">
+      <div class="progress-wrap"><div class="progress-bar" id="overallProgress"></div></div>
+      <div class="status-mini" id="overallStatus">Cases solved: 0/4</div>
+    </div>
+    <div class="timer-stack">
+      <div class="timer-pill"><div class="label">Mission</div><div class="time" id="missionTimer">40:00</div></div>
+      <div class="timer-pill"><div class="label">Case</div><div class="time" id="caseTimer">10:00</div></div>
+    </div>
+  </div>
+</header>
+
+<main class="app-body">
+  <nav class="nav-tabs" aria-label="Investigation cases">
+    <button class="nav-tab active" data-tab="case1">CASE 01 <span class="dot"></span></button>
+    <button class="nav-tab" data-tab="case2">CASE 02 <span class="dot"></span></button>
+    <button class="nav-tab" data-tab="case3">CASE 03 <span class="dot"></span></button>
+    <button class="nav-tab" data-tab="case4">CASE 04 <span class="dot"></span></button>
+    <button class="nav-tab" data-tab="report">FINAL REPORT <span class="dot"></span></button>
+  </nav>
+
+  <!-- CASE 1 -->
+  <section class="case-panel active" id="case1Panel" data-case="1">
+    <div class="case-head">
+      <div><div class="case-kicker">Case 01 · Educational Context</div><h2>The Classroom of Silence</h2><div class="case-context">University classroom · Participation & interpretation</div></div>
+      <div class="case-actions"><button class="btn btn-soft btn-sm" onclick="openToolkit()">OPEN EVALUATOR'S TOOLKIT</button><button class="btn btn-ghost btn-sm" onclick="toggleNotebook()">ADD TO CASE NOTES</button></div>
+    </div>
+    <div class="stage-grid">
+      <div class="stack">
+        <article class="card case-brief"><div class="stage-label"><span class="stage-number">1</span>Case Briefing</div><h3>Professor Rivera's concern</h3><p>Professor Rivera has 25 students. Daniel and Sofia speak almost immediately and frequently respond before other students. Several students participate occasionally. Five students almost never speak during whole-class discussions.</p><blockquote>“The five silent students probably do not understand the material.”</blockquote><p class="microcopy">Your task: determine what the evidence actually supports before accepting this conclusion.</p></article>
+
+        <article class="card"><div class="stage-label"><span class="stage-number">2</span>Initial Hypothesis</div><div class="question-title">What does the professor KNOW from the information available?</div><div class="option-grid" id="c1q1">
+          <label class="option"><input type="radio" name="c1q1" value="A"> The quiet students do not understand.</label>
+          <label class="option"><input type="radio" name="c1q1" value="B"> The quiet students dislike the professor.</label>
+          <label class="option"><input type="radio" name="c1q1" value="C"> Some students participate much more frequently than others.</label>
+          <label class="option"><input type="radio" name="c1q1" value="D"> The class has interpersonal conflict.</label>
+        </div><button class="btn btn-navy btn-sm" onclick="checkRadio('c1q1','C','c1fb1',1)">ANALYZE CLAIM</button><div class="feedback" id="c1fb1"></div></article>
+
+        <article class="card"><div class="stage-label"><span class="stage-number">3</span>Evidence Locker</div><h3>Evidence A — Participation Log</h3><button class="btn btn-teal btn-sm" onclick="toggleEvidence('c1evidenceA',1,'c1_evidenceA')">OPEN EVIDENCE A</button>
+          <div id="c1evidenceA" class="hidden">
+            <span class="stamp obs">Observation</span>
+            <table class="log-table"><thead><tr><th>Student</th><th>Contributions</th></tr></thead><tbody>
+              <tr><td>Daniel</td><td>12</td></tr><tr><td>Sofia</td><td>10</td></tr><tr><td>Mariana</td><td>5</td></tr><tr><td>Luis</td><td>4</td></tr><tr><td>Carlos</td><td>3</td></tr><tr><td>Ana</td><td>2</td></tr><tr><td>Elena</td><td>1</td></tr><tr><td>Mateo</td><td>1</td></tr><tr><td>Rosa</td><td>0</td></tr><tr><td>David</td><td>0</td></tr><tr><td>Julia</td><td>0</td></tr><tr><td>Miguel</td><td>0</td></tr><tr><td>Sara</td><td>0</td></tr>
+            </tbody></table>
+            <div class="question"><div class="question-title">Which patterns can you DOCUMENT?</div><div class="option-grid" id="c1patterns">
+              <label class="option"><input type="checkbox" value="Unequal participation"> Unequal participation</label>
+              <label class="option"><input type="checkbox" value="Two highly active participants"> Two highly active participants</label>
+              <label class="option"><input type="checkbox" value="Several minimally active participants"> Several minimally active participants</label>
+              <label class="option"><input type="checkbox" value="Five silent participants"> Five silent participants</label>
+              <label class="option"><input type="checkbox" value="Lack of knowledge"> Lack of knowledge</label>
+              <label class="option"><input type="checkbox" value="Fear of the professor"> Fear of the professor</label>
+            </div><button class="btn btn-navy btn-sm" onclick="checkC1Patterns()">VERIFY PATTERNS</button><div class="feedback" id="c1patternFb"></div></div>
+          </div>
+        </article>
+
+        <article class="card"><div class="stage-label"><span class="stage-number">4</span>Analyze the Clues</div><h3>Evidence B — Behavioral Notes</h3><button class="btn btn-teal btn-sm" onclick="toggleEvidence('c1evidenceB',1,'c1_evidenceB')">INSPECT COMMUNICATION LOG</button>
+          <div id="c1evidenceB" class="hidden"><div class="timeline">
+            <div class="timeline-item"><div class="timeline-time">09:10</div><div>Daniel responds before the professor finishes the question.</div></div>
+            <div class="timeline-item"><div class="timeline-time">09:13</div><div>Sofia responds immediately.</div></div>
+            <div class="timeline-item"><div class="timeline-time">09:17</div><div>Sara begins raising her hand but lowers it after Daniel starts speaking.</div></div>
+            <div class="timeline-item"><div class="timeline-time">09:21</div><div>Julia writes for approximately 20 seconds before looking toward the discussion.</div></div>
+            <div class="timeline-item"><div class="timeline-time">09:26</div><div>Miguel discusses an answer actively with a partner but does not volunteer publicly.</div></div>
+            <div class="timeline-item"><div class="timeline-time">09:31</div><div>Daniel interrupts Luis once.</div></div>
+          </div><div class="question"><div class="question-title">Which evaluation technique produced this type of evidence?</div><div class="tool-select" id="c1methodEvidence"><button class="tool-btn" data-value="Observation" onclick="selectTool(this,'c1methodEvidence','c1_methodEvidence',1)"><strong>Observation</strong><small>Watch behavior in real time.</small></button><button class="tool-btn" data-value="Sociogram" onclick="selectTool(this,'c1methodEvidence','c1_methodEvidence',1)"><strong>Sociogram</strong><small>Map social structure.</small></button><button class="tool-btn" data-value="Interview" onclick="selectTool(this,'c1methodEvidence','c1_methodEvidence',1)"><strong>Interview</strong><small>Ask about experience.</small></button></div></div></div>
+        </article>
+
+        <article class="card"><div class="stage-label"><span class="stage-number">5</span>Select Your Tool</div><div class="question-title">What should investigators do NEXT if they want to understand WHY some students rarely speak?</div><div class="tool-select" id="c1nextTool"><button class="tool-btn" data-value="Observation" onclick="selectTool(this,'c1nextTool','c1_nextTool',1)"><strong>Observation</strong><small>Collect more real-time behavior.</small></button><button class="tool-btn" data-value="Sociogram" onclick="selectTool(this,'c1nextTool','c1_nextTool',1)"><strong>Sociogram</strong><small>Look for structural patterns.</small></button><button class="tool-btn" data-value="Interview" onclick="selectTool(this,'c1nextTool','c1_nextTool',1)"><strong>Interview</strong><small>Explore reasons and perspectives.</small></button></div><div class="feedback info show">Observation documented the participation pattern. Interviews can now explore the reasons behind it.</div></article>
+
+        <article class="card"><div class="stage-label"><span class="stage-number">6</span>Investigation Simulation</div><h3>Interview two students</h3><p class="microcopy">Choose any two. Different perspectives may explain the same visible behavior differently.</p><div class="interview-grid" id="c1Interviews">
+          <div class="person-card"><button class="btn btn-ghost" onclick="revealInterview(1,'Sara',this)">INTERVIEW SARA</button><div class="quote hidden">“I usually need time to organize my answer. By the time I'm ready, someone else is already talking.”</div></div>
+          <div class="person-card"><button class="btn btn-ghost" onclick="revealInterview(1,'Julia',this)">INTERVIEW JULIA</button><div class="quote hidden">“I prefer discussing ideas with one or two classmates before sharing with everybody.”</div></div>
+          <div class="person-card"><button class="btn btn-ghost" onclick="revealInterview(1,'Miguel',this)">INTERVIEW MIGUEL</button><div class="quote hidden">“I understand the work. I just don't like competing for speaking time.”</div></div>
+          <div class="person-card"><button class="btn btn-ghost" onclick="revealInterview(1,'Daniel',this)">INTERVIEW DANIEL</button><div class="quote hidden">“I thought nobody else wanted to answer, so I kept the conversation moving.”</div></div>
+        </div></article>
+
+        <article class="card"><div class="stage-label"><span class="stage-number">7</span>Diagnosis</div><div class="question-title">Was the professor's original conclusion supported?</div><select id="c1Conclusion" onchange="saveField('c1_conclusion',this.value,1)"><option value="">Select...</option><option>SUPPORTED</option><option>PARTIALLY SUPPORTED</option><option>NOT SUPPORTED BY THE AVAILABLE EVIDENCE</option></select><div class="field" style="margin-top:12px"><label for="c1Diagnosis">What group dynamic appears to be occurring?</label><textarea id="c1Diagnosis" data-save="c1_diagnosis" data-case="1" placeholder="Use evidence: participation pattern, wait time, different participation styles..."></textarea></div></article>
+
+        <article class="card"><div class="stage-label"><span class="stage-number">8</span>Case File Summary</div><div class="field"><label for="c1Primary">Primary evaluation technique</label><select id="c1Primary" data-save="c1_primary" data-case="1"><option value="">Select...</option><option>Observation</option><option>Sociogram</option><option>Interview</option></select></div><div class="field"><label for="c1Secondary">Secondary confirmation technique</label><select id="c1Secondary" data-save="c1_secondary" data-case="1"><option value="">Select...</option><option>Observation</option><option>Sociogram</option><option>Interview</option></select></div><div class="field"><label for="c1Recommendation">Suggest ONE action the instructor could test without forcing quiet students to speak publicly.</label><textarea id="c1Recommendation" data-save="c1_recommendation" data-case="1"></textarea></div><button class="btn btn-primary" onclick="completeCase(1)">CLOSE CASE 01</button><div id="c1Complete" class="complete-banner">Case file updated. Evidence and reasoning are now included in the final report.</div></article>
+      </div>
+      <aside class="side-panel"><div class="side-card"><h3>Case 01 Tracker</h3><div class="case-checks" id="checks1"></div></div><div class="side-card"><h3>Evidence Rule</h3><p><strong>Observation ≠ explanation.</strong></p><p>“Five students were silent” is evidence. “They do not understand” is a hypothesis.</p></div></aside>
+    </div>
+  </section>
+
+  <!-- CASE 2 -->
+  <section class="case-panel" id="case2Panel" data-case="2">
+    <div class="case-head"><div><div class="case-kicker">Case 02 · Educational Context</div><h2>The Invisible Teammate</h2><div class="case-context">University project team · Social structure & integration</div></div><div class="case-actions"><button class="btn btn-soft btn-sm" onclick="openToolkit()">OPEN EVALUATOR'S TOOLKIT</button><button class="btn btn-ghost btn-sm" onclick="toggleNotebook()">ADD TO CASE NOTES</button></div></div>
+    <div class="stage-grid"><div class="stack">
+      <article class="card case-brief"><div class="stage-label"><span class="stage-number">1</span>Case Briefing</div><h3>A team that “seems fine”</h3><p>Seven students are preparing a major entrepreneurship project. Their professor says, “They seem to work well. I rarely see them arguing.” However, Gabriela has completed very little work and recently missed two planning meetings.</p><blockquote>Team comment: “She just isn't committed.”</blockquote><p class="microcopy">Investigate the social structure before accepting the explanation.</p></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">2</span>Initial Hypothesis</div><div class="question-title">Which technique is especially useful for investigating preference, affiliation, isolation, and subgroup formation?</div><div class="tool-select" id="c2initial"><button class="tool-btn" data-value="Observation" onclick="selectTool(this,'c2initial','c2_initial',2)"><strong>Observation</strong><small>Watch actions.</small></button><button class="tool-btn" data-value="Sociogram" onclick="selectTool(this,'c2initial','c2_initial',2)"><strong>Sociogram</strong><small>Map connections.</small></button><button class="tool-btn" data-value="Interview" onclick="selectTool(this,'c2initial','c2_initial',2)"><strong>Interview</strong><small>Explore perspectives.</small></button></div></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">3</span>Evidence Locker</div><h3>Sociogram Construction</h3><p>Each member answered: <strong>“Which TWO people would you prefer to work with on the most important part of the project?”</strong></p><div class="evidence-locker">
+        <div class="evidence-card">Andrea → Bruno, Camila<br>Bruno → Andrea, Camila<br>Camila → Andrea, Bruno</div>
+        <div class="evidence-card">Diego → Elisa, Fernando<br>Elisa → Diego, Fernando<br>Fernando → Diego, Elisa<br>Gabriela → Camila, Elisa</div>
+      </div><button class="btn btn-teal btn-sm" style="margin-top:12px" onclick="showNetwork('network2',2)">VIEW NETWORK</button><div id="network2" class="sociogram-wrap hidden" style="margin-top:12px"><div class="svg-holder"><svg class="sociogram" id="svg2" role="img" aria-label="Case 2 sociogram"></svg></div></div></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">4</span>Analyze the Clues</div><div class="question-title">Who receives the fewest incoming preferences?</div><div class="option-grid" id="c2fewest"><label class="option"><input type="radio" name="c2fewest" value="Andrea"> Andrea</label><label class="option"><input type="radio" name="c2fewest" value="Gabriela"> Gabriela</label><label class="option"><input type="radio" name="c2fewest" value="Elisa"> Elisa</label><label class="option"><input type="radio" name="c2fewest" value="Fernando"> Fernando</label></div><button class="btn btn-navy btn-sm" onclick="checkRadio('c2fewest','Gabriela','c2FewFb',2)">VERIFY</button><div class="feedback" id="c2FewFb"></div><div class="question"><div class="question-title">What structural patterns deserve investigation? Select all supported statements.</div><div class="option-grid" id="c2patterns"><label class="option"><input type="checkbox" value="Two strong subgroups"> Two strong subgroups</label><label class="option"><input type="checkbox" value="Gabriela has weak incoming connections"> Gabriela has weak incoming connections</label><label class="option"><input type="checkbox" value="The network is completely random"> The network is completely random</label><label class="option"><input type="checkbox" value="Everybody is equally connected"> Everybody is equally connected</label></div><button class="btn btn-navy btn-sm" onclick="checkC2Patterns()">ANALYZE STRUCTURE</button><div class="feedback" id="c2patternFb"></div></div></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">5</span>Select Your Tool</div><div class="question-title">Does this sociogram prove that Gabriela is lazy?</div><div class="option-grid" id="c2lazy"><label class="option"><input type="radio" name="c2lazy" value="Yes"> Yes</label><label class="option"><input type="radio" name="c2lazy" value="No"> No</label></div><button class="btn btn-navy btn-sm" onclick="checkRadio('c2lazy','No','c2LazyFb',2,'A sociogram shows relational structure. It does not automatically explain motivation or cause.')">CHECK CLAIM</button><div class="feedback" id="c2LazyFb"></div><div class="question-title" style="margin-top:15px">What method could help investigators understand Gabriela's perspective?</div><div class="tool-select" id="c2follow"><button class="tool-btn" data-value="Observation" onclick="selectTool(this,'c2follow','c2_follow',2)"><strong>Observation</strong><small>Watch behavior.</small></button><button class="tool-btn" data-value="Sociogram" onclick="selectTool(this,'c2follow','c2_follow',2)"><strong>Sociogram</strong><small>Map structure.</small></button><button class="tool-btn" data-value="Interview" onclick="selectTool(this,'c2follow','c2_follow',2)"><strong>Interview</strong><small>Ask about experience.</small></button></div></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">6</span>Investigation Simulation</div><h3>Follow-up interviews</h3><div class="interview-grid"><div class="person-card"><button class="btn btn-ghost" onclick="revealSingleQuote(this,2,'Gabriela')">INTERVIEW GABRIELA</button><div class="quote hidden">“Every time responsibilities were assigned, the two groups had already discussed them privately. I wasn't sure where I belonged. Eventually I stopped offering ideas because decisions seemed to be made before meetings.”</div></div><div class="person-card"><button class="btn btn-ghost" onclick="revealSingleQuote(this,2,'Camila')">INTERVIEW CAMILA</button><div class="quote hidden">“I didn't realize Gabriela felt excluded. We usually text the people we already work with because it's faster.”</div></div></div></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">7</span>Diagnosis</div><div class="field"><label for="c2SocioReveal">What does the sociogram reveal?</label><textarea id="c2SocioReveal" data-save="c2_socioReveal" data-case="2"></textarea></div><div class="field"><label for="c2InterviewAdd">What do the interviews add?</label><textarea id="c2InterviewAdd" data-save="c2_interviewAdd" data-case="2"></textarea></div><div class="field"><label for="c2Diagnosis">What group dynamic is present?</label><textarea id="c2Diagnosis" data-save="c2_diagnosis" data-case="2"></textarea></div></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">8</span>Case File Summary</div><div class="field"><label for="c2Primary">Primary evaluation technique</label><select id="c2Primary" data-save="c2_primary" data-case="2"><option value="">Select...</option><option>Observation</option><option>Sociogram</option><option>Interview</option></select></div><div class="field"><label for="c2Secondary">Secondary confirmation technique</label><select id="c2Secondary" data-save="c2_secondary" data-case="2"><option value="">Select...</option><option>Observation</option><option>Sociogram</option><option>Interview</option></select></div><div class="field"><label for="c2Recommendation">What should the group change?</label><textarea id="c2Recommendation" data-save="c2_recommendation" data-case="2"></textarea></div><button class="btn btn-primary" onclick="completeCase(2)">CLOSE CASE 02</button><div id="c2Complete" class="complete-banner">Case file updated.</div></article>
+    </div><aside class="side-panel"><div class="side-card"><h3>Case 02 Tracker</h3><div class="case-checks" id="checks2"></div></div><div class="side-card"><h3>Network Rule</h3><p>A network map can reveal <span class="glossary" title="The degree of connection and unity within a group">cohesion</span>, clusters, bridges, and <span class="glossary" title="A weak or limited connection to the group's social network">isolation</span>. It cannot prove motive by itself.</p></div></aside></div>
+  </section>
+
+  <!-- CASE 3 -->
+  <section class="case-panel" id="case3Panel" data-case="3">
+    <div class="case-head"><div><div class="case-kicker">Case 03 · Workplace Context</div><h2>The Chaotic Shift</h2><div class="case-context">Restaurant service team · Communication flow & onboarding</div></div><div class="case-actions"><button class="btn btn-soft btn-sm" onclick="openToolkit()">OPEN EVALUATOR'S TOOLKIT</button><button class="btn btn-ghost btn-sm" onclick="toggleNotebook()">ADD TO CASE NOTES</button></div></div>
+    <div class="stage-grid"><div class="stack">
+      <article class="card case-brief"><div class="stage-label"><span class="stage-number">1</span>Case Briefing</div><h3>Friday evening breakdown</h3><p>A restaurant manager receives repeated complaints about slow service during the Friday shift. Employees blame one another. Shift team: Lucía (supervisor), Marco (server), Nora (server), Alex (new employee), Paola (cashier), and Iván (kitchen coordinator).</p><blockquote>Employee report: “Communication is terrible.”</blockquote></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">2</span>Initial Hypothesis</div><div class="question-title">What technique should investigators begin with if they need evidence of communication behavior during the actual shift?</div><div class="tool-select" id="c3initial"><button class="tool-btn" data-value="Observation" onclick="selectTool(this,'c3initial','c3_initial',3)"><strong>Observation</strong><small>Watch what happens during service.</small></button><button class="tool-btn" data-value="Sociogram" onclick="selectTool(this,'c3initial','c3_initial',3)"><strong>Sociogram</strong><small>Map affiliations.</small></button><button class="tool-btn" data-value="Interview" onclick="selectTool(this,'c3initial','c3_initial',3)"><strong>Interview</strong><small>Ask why.</small></button></div></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">3</span>Evidence Locker</div><h3>Surveillance-style observation log</h3><button class="btn btn-teal btn-sm" onclick="toggleEvidence('c3timeline',3,'c3_timeline')">INSPECT COMMUNICATION LOG</button><div id="c3timeline" class="timeline hidden" style="margin-top:12px">
+        <div class="timeline-item"><div class="timeline-time">19:02</div><div>Lucía gives Marco and Nora instructions.</div></div><div class="timeline-item"><div class="timeline-time">19:05</div><div>Alex asks Marco where clean glasses are stored. Marco points toward storage without stopping.</div></div><div class="timeline-item"><div class="timeline-time">19:08</div><div>Lucía changes table assignments but tells only Marco.</div></div><div class="timeline-item"><div class="timeline-time">19:12</div><div>Nora delivers an order to the wrong table.</div></div><div class="timeline-item"><div class="timeline-time">19:15</div><div>Paola asks Lucía about the updated table assignments.</div></div><div class="timeline-item"><div class="timeline-time">19:17</div><div>Lucía says, “I already explained this.”</div></div><div class="timeline-item"><div class="timeline-time">19:22</div><div>Iván receives two versions of the same order.</div></div><div class="timeline-item"><div class="timeline-time">19:25</div><div>Alex waits beside the service station for approximately two minutes without approaching anyone.</div></div><div class="timeline-item"><div class="timeline-time">19:31</div><div>Marco corrects Alex in front of a customer.</div></div>
+      </div></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">4</span>Analyze the Clues</div><h3>Evidence Tagging</h3><p class="microcopy">Select one or more categories that deserve investigation. These are diagnostic categories, not final judgments.</p><div class="tag-grid" id="c3tags"><button class="tag" onclick="toggleTag(this,3)">Communication breakdown</button><button class="tag" onclick="toggleTag(this,3)">Leadership/control</button><button class="tag" onclick="toggleTag(this,3)">Unclear information flow</button><button class="tag" onclick="toggleTag(this,3)">New-member integration</button><button class="tag" onclick="toggleTag(this,3)">Interpersonal conflict</button><button class="tag" onclick="toggleTag(this,3)">Insufficient evidence</button></div></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">5</span>Fact vs. Interpretation</div><div class="question-title">Classify each statement.</div><div id="factGame3" class="stack"></div></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">6</span>Investigation Simulation</div><h3>Select two people to interview</h3><div class="interview-grid" id="c3Interviews">
+        <div class="person-card"><button class="btn btn-ghost" onclick="revealInterview(3,'Lucía',this)">INTERVIEW LUCÍA</button><div class="quote hidden">“When it's busy I give instructions to whoever is closest. I expect that person to tell everybody else.”</div></div>
+        <div class="person-card"><button class="btn btn-ghost" onclick="revealInterview(3,'Alex',this)">INTERVIEW ALEX</button><div class="quote hidden">“I'm new and I don't always know who I should ask. Sometimes everyone looks too busy.”</div></div>
+        <div class="person-card"><button class="btn btn-ghost" onclick="revealInterview(3,'Nora',this)">INTERVIEW NORA</button><div class="quote hidden">“Changes happen quickly, but there isn't one place where everyone can check them.”</div></div>
+        <div class="person-card"><button class="btn btn-ghost" onclick="revealInterview(3,'Iván',this)">INTERVIEW IVÁN</button><div class="quote hidden">“The biggest problem isn't effort. Different people give me different information.”</div></div>
+      </div></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">7</span>Diagnosis</div><div class="field"><label for="c3ObsEvidence">What evidence came from observation?</label><textarea id="c3ObsEvidence" data-save="c3_obsEvidence" data-case="3"></textarea></div><div class="field"><label for="c3InterviewUnderstanding">What additional understanding came from interviews?</label><textarea id="c3InterviewUnderstanding" data-save="c3_interviewUnderstanding" data-case="3"></textarea></div><div class="field"><label for="c3Diagnosis">What group dynamic appears to be occurring?</label><textarea id="c3Diagnosis" data-save="c3_diagnosis" data-case="3"></textarea></div></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">8</span>Case File Summary</div><div class="field"><label for="c3Primary">Primary evaluation technique</label><select id="c3Primary" data-save="c3_primary" data-case="3"><option value="">Select...</option><option>Observation</option><option>Sociogram</option><option>Interview</option></select></div><div class="field"><label for="c3Secondary">Secondary confirmation technique</label><select id="c3Secondary" data-save="c3_secondary" data-case="3"><option value="">Select...</option><option>Observation</option><option>Sociogram</option><option>Interview</option></select></div><div class="field"><label for="c3Recommendation">What intervention would you test first?</label><textarea id="c3Recommendation" data-save="c3_recommendation" data-case="3"></textarea></div><button class="btn btn-primary" onclick="completeCase(3)">CLOSE CASE 03</button><div id="c3Complete" class="complete-banner">Case file updated.</div></article>
+    </div><aside class="side-panel"><div class="side-card"><h3>Case 03 Tracker</h3><div class="case-checks" id="checks3"></div></div><div class="side-card"><h3>Investigator Reminder</h3><p>“Alex waited for two minutes” is an observation. “Alex is unmotivated” is an interpretation.</p></div></aside></div>
+  </section>
+
+  <!-- CASE 4 -->
+  <section class="case-panel" id="case4Panel" data-case="4">
+    <div class="case-head"><div><div class="case-kicker">Case 04 · Community Context</div><h2>The Committee with Two Worlds</h2><div class="case-context">Community cultural-event committee · Bridges & information bottlenecks</div></div><div class="case-actions"><button class="btn btn-soft btn-sm" onclick="openToolkit()">OPEN EVALUATOR'S TOOLKIT</button><button class="btn btn-ghost btn-sm" onclick="toggleNotebook()">ADD TO CASE NOTES</button></div></div>
+    <div class="stage-grid"><div class="stack">
+      <article class="card case-brief"><div class="stage-label"><span class="stage-number">1</span>Case Briefing</div><h3>Friendly meetings, duplicated work</h3><p>A cultural-event planning committee appears friendly. Meetings are polite and there are few visible arguments. However, tasks are frequently duplicated, and some information reaches only half of the committee.</p><blockquote>Coordinator: “I don't understand it. Everyone gets along.”</blockquote></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">2</span>Initial Hypothesis</div><div class="question-title">Which method is especially useful if investigators want to see hidden communication structure?</div><div class="tool-select" id="c4initial"><button class="tool-btn" data-value="Observation" onclick="selectTool(this,'c4initial','c4_initial',4)"><strong>Observation</strong><small>Watch behavior.</small></button><button class="tool-btn" data-value="Sociogram" onclick="selectTool(this,'c4initial','c4_initial',4)"><strong>Sociogram</strong><small>Map recurring connections.</small></button><button class="tool-btn" data-value="Interview" onclick="selectTool(this,'c4initial','c4_initial',4)"><strong>Interview</strong><small>Explore experiences.</small></button></div></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">3</span>Evidence Locker</div><h3>Clue A — Frequent Work Communication</h3><p>Ana ↔ Ben · Ana ↔ Carla · Ben ↔ Carla · Carla ↔ David<br>Emma ↔ Fabián · Emma ↔ Grace · Fabián ↔ Grace · Grace ↔ Hugo<br>David ↔ Irene · Irene ↔ Emma</p><button class="btn btn-teal btn-sm" onclick="showNetwork('network4',4)">VIEW NETWORK</button><div id="network4" class="sociogram-wrap hidden" style="margin-top:12px"><div class="svg-holder"><svg class="sociogram" id="svg4" role="img" aria-label="Case 4 sociogram"></svg></div></div></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">4</span>Analyze the Clues</div><div class="question-title">If Irene stopped participating, what could happen to information flow?</div><textarea id="c4BridgeRisk" data-save="c4_bridgeRisk" data-case="4" placeholder="Explain what the network suggests."></textarea><div class="field" style="margin-top:12px"><label for="c4BridgePerson">Who currently functions as the bridge?</label><select id="c4BridgePerson" data-save="c4_bridgePerson" data-case="4"><option value="">Select...</option><option>Ana</option><option>Carla</option><option>Irene</option><option>Grace</option></select></div></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">5</span>Select Your Tool</div><h3>Clue B — Interview Extracts</h3><button class="btn btn-teal btn-sm" onclick="toggleEvidence('c4quotes',4,'c4_quotes')">INTERVIEW WITNESSES</button><div id="c4quotes" class="hidden" style="margin-top:12px"><div class="interview-grid">
+        <div class="quote"><strong>Ana:</strong> “We usually plan our section in our own group chat.”</div><div class="quote"><strong>Emma:</strong> “We do the same because the full committee chat gets overwhelming.”</div><div class="quote"><strong>Irene:</strong> “People from both sides message me because I know what each group is doing. Sometimes I spend more time passing information than working on my own task.”</div><div class="quote"><strong>Hugo:</strong> “I thought everybody received the schedule update. Apparently only our chat had it.”</div>
+      </div></div></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">6</span>Investigation Simulation</div><div class="question-title">Is the principal problem visible interpersonal conflict?</div><div class="option-grid" id="c4conflict"><label class="option"><input type="radio" name="c4conflict" value="Yes"> Yes</label><label class="option"><input type="radio" name="c4conflict" value="No"> No</label></div><button class="btn btn-navy btn-sm" onclick="checkRadio('c4conflict','No','c4ConflictFb',4,'The evidence points more strongly to fragmented communication, subgrouping, and bridge dependency than to visible interpersonal conflict.')">CHECK CLAIM</button><div class="feedback" id="c4ConflictFb"></div></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">7</span>Diagnosis</div><div class="field"><label for="c4NetworkReveal">What does the network reveal that a normal meeting might hide?</label><textarea id="c4NetworkReveal" data-save="c4_networkReveal" data-case="4"></textarea></div><div class="field"><label for="c4Risk">What organizational risk does this create?</label><textarea id="c4Risk" data-save="c4_risk" data-case="4"></textarea></div><div class="field"><label for="c4Diagnosis">What group dynamic is present?</label><textarea id="c4Diagnosis" data-save="c4_diagnosis" data-case="4"></textarea></div></article>
+
+      <article class="card"><div class="stage-label"><span class="stage-number">8</span>Case File Summary</div><div class="field"><label for="c4Primary">Primary evaluation technique</label><select id="c4Primary" data-save="c4_primary" data-case="4"><option value="">Select...</option><option>Observation</option><option>Sociogram</option><option>Interview</option></select></div><div class="field"><label for="c4Secondary">Secondary confirmation technique</label><select id="c4Secondary" data-save="c4_secondary" data-case="4"><option value="">Select...</option><option>Observation</option><option>Sociogram</option><option>Interview</option></select></div><div class="field"><label for="c4Recommendation">What should the committee change?</label><textarea id="c4Recommendation" data-save="c4_recommendation" data-case="4"></textarea></div><button class="btn btn-primary" onclick="completeCase(4)">CLOSE CASE 04</button><div id="c4Complete" class="complete-banner">Case file updated.</div></article>
+    </div><aside class="side-panel"><div class="side-card"><h3>Case 04 Tracker</h3><div class="case-checks" id="checks4"></div></div><div class="side-card"><h3>Bridge Dependency</h3><p>A single person connecting two clusters can become an information bottleneck. The structure may look friendly yet remain fragile.</p></div></aside></div>
+  </section>
+
+  <!-- REPORT -->
+  <section class="case-panel" id="reportPanel">
+    <div class="case-head"><div><div class="case-kicker">Final Case File</div><h2>Group Dynamics Investigation Report</h2><div class="case-context">Automatically generated from your four investigations</div></div><div class="case-actions"><button class="btn btn-soft btn-sm" onclick="generateReport()">REFRESH REPORT</button></div></div>
+    <div class="report-shell">
+      <article class="card"><div class="stage-label"><span class="stage-number">R</span>Cross-Case Reflection</div><div class="report-grid">
+        <div class="field"><label>1. Observation is most useful when investigators need to know...</label><textarea data-save="reflection_1" id="reflection1"></textarea></div>
+        <div class="field"><label>2. A sociogram is most useful when investigators need to know...</label><textarea data-save="reflection_2" id="reflection2"></textarea></div>
+        <div class="field"><label>3. Interviews are most useful when investigators need to know...</label><textarea data-save="reflection_3" id="reflection3"></textarea></div>
+        <div class="field"><label>4. One danger of relying on only one evaluation technique is...</label><textarea data-save="reflection_4" id="reflection4"></textarea></div>
+        <div class="field"><label>5. The most important lesson I learned about diagnosing a group is...</label><textarea data-save="reflection_5" id="reflection5"></textarea></div>
+        <div class="field"><label>6. Before intervening in a group, a manager or educator should...</label><textarea data-save="reflection_6" id="reflection6"></textarea></div>
+      </div><button class="btn btn-primary" style="margin-top:12px" onclick="finalizeReport()">FINALIZE CASE FILES</button></article>
+
+      <div class="report-actions"><button class="btn btn-navy" onclick="downloadPDF()">DOWNLOAD REPORT AS PDF</button><button class="btn btn-teal" onclick="downloadImage()">DOWNLOAD REPORT AS IMAGE</button><button class="btn btn-ghost" onclick="window.print()">PRINT / SAVE REPORT</button><button class="btn btn-ghost" onclick="copySummary()">COPY REPORT SUMMARY</button><button class="btn btn-primary" onclick="shareReport()">SHARE REPORT</button><button class="btn btn-red" onclick="resetInvestigation()">RESET INVESTIGATION</button></div>
+
+      <section class="report-paper" id="reportPaper" aria-live="polite"></section>
+    </div>
+  </section>
+</main>
+</div>
+
+<div class="floating-tools hidden" id="floatingTools"><button class="fab" onclick="toggleNotebook()">INVESTIGATOR NOTEBOOK</button><button class="fab" onclick="openFacilitator()">FACILITATOR MODE</button></div>
+
+<aside class="notebook" id="notebook" aria-label="Investigator notebook"><div class="notebook-head"><strong>Investigator Notebook</strong><button class="close-x" style="background:transparent;color:#fff;border-color:#678096" onclick="toggleNotebook()" aria-label="Close notebook">×</button></div><div class="notebook-body"><p class="microcopy">Notes persist as you move between cases.</p><textarea id="notebookText" placeholder="Record clues, contradictions, questions, and hypotheses..."></textarea><button class="btn btn-navy" onclick="saveNotebook()">SAVE NOTES</button></div></aside>
+
+<div class="modal-backdrop" id="toolkitModal" role="dialog" aria-modal="true" aria-labelledby="toolkitTitle"><div class="modal"><div class="modal-head"><h2 id="toolkitTitle" style="margin:0;font-family:Georgia,serif;color:var(--navy)">Evaluator's Toolkit</h2><button class="close-x" onclick="closeModal('toolkitModal')" aria-label="Close toolkit">×</button></div><div class="modal-body"><div class="toolkit-cards">
+  <div class="toolkit-card"><span class="stamp obs">Watch the action</span><h3>Observation</h3><p><strong>Focus:</strong> real-time behavior.</p><p><strong>Evidence:</strong> participation, interaction, interruptions, non-verbal cues, decision-making.</p><p><strong>Strength:</strong> direct evidence of what people actually do.</p><p><strong>Limitation:</strong> behavior may not explain why it occurs.</p><p><strong>Example:</strong> “Who speaks, who interrupts, and how are decisions made?”</p></div>
+  <div class="toolkit-card"><span class="stamp network">Map the structure</span><h3>Sociogram</h3><p><strong>Focus:</strong> social structure.</p><p><strong>Evidence:</strong> preferences, affiliations, clusters, central members, bridges, weak connections.</p><p><strong>Strength:</strong> makes hidden structures visible.</p><p><strong>Limitation:</strong> structure does not automatically explain motive.</p><p><strong>Example:</strong> “Who collaborates with whom most often?”</p></div>
+  <div class="toolkit-card"><span class="stamp interview">Ask about the why</span><h3>Interview</h3><p><strong>Focus:</strong> individual experience and interpretation.</p><p><strong>Evidence:</strong> perceptions, concerns, motivations, goals, explanations.</p><p><strong>Strength:</strong> provides depth and perspective.</p><p><strong>Limitation:</strong> self-report may not perfectly match actual behavior.</p><p><strong>Example:</strong> “What makes it easy or difficult for you to participate?”</p></div>
+</div><div class="principle">OBSERVE = ACTION · SOCIOGRAM = STRUCTURE · INTERVIEW = WHY / PERSPECTIVE</div></div></div></div>
+
+<div class="modal-backdrop" id="facilitatorModal" role="dialog" aria-modal="true" aria-labelledby="facTitle"><div class="modal"><div class="modal-head"><h2 id="facTitle" style="margin:0;font-family:Georgia,serif;color:var(--navy)">Facilitator Mode</h2><button class="close-x" onclick="closeModal('facilitatorModal')" aria-label="Close facilitator mode">×</button></div><div class="modal-body" id="facilitatorBody"></div></div></div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const STORAGE_KEY='gdiu_hidden_network_v1';
+const defaultState={profile:{name:'',group:'',team:'',password:''},started:false,currentTab:'case1',caseCompleted:{1:false,2:false,3:false,4:false},answers:{},interviews:{1:[],2:[],3:[],4:[]},evidenceScore:{correct:0,total:0,scored:{}},notebook:'',finalized:false};
+let state=loadState();
+let activeCase='case1';
+
+const stageRequirements={
+  1:[['Initial claim analyzed','c1q1'],['Evidence A opened','c1_evidenceA'],['Evidence B opened','c1_evidenceB'],['Next tool selected','c1_nextTool'],['Two interviews completed','interviews1'],['Diagnosis written','c1_diagnosis'],['Recommendation written','c1_recommendation']],
+  2:[['Initial tool selected','c2_initial'],['Network viewed','c2_network'],['Incoming preferences analyzed','c2fewest'],['Structure interpreted','c2patterns'],['Perspective method selected','c2_follow'],['Interviews reviewed','interviews2'],['Diagnosis written','c2_diagnosis'],['Recommendation written','c2_recommendation']],
+  3:[['Initial tool selected','c3_initial'],['Observation log opened','c3_timeline'],['Evidence tags selected','c3_tags'],['Fact vs interpretation completed','factGame3'],['Two interviews completed','interviews3'],['Observation evidence written','c3_obsEvidence'],['Diagnosis written','c3_diagnosis'],['Recommendation written','c3_recommendation']],
+  4:[['Initial tool selected','c4_initial'],['Network viewed','c4_network'],['Bridge identified','c4_bridgePerson'],['Interviews opened','c4_quotes'],['Conflict claim analyzed','c4conflict'],['Network insight written','c4_networkReveal'],['Diagnosis written','c4_diagnosis'],['Recommendation written','c4_recommendation']]
+};
+const factStatements=[
+  {text:'Alex waited beside the service station for two minutes.',answer:'Observation'},
+  {text:'Alex is unmotivated.',answer:'Interpretation'},
+  {text:'Lucía communicated the changed assignments only to Marco.',answer:'Observation'},
+  {text:'Lucía is a bad leader.',answer:'Interpretation'},
+  {text:'Two different versions of one order reached the kitchen.',answer:'Observation'}
+];
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);if(!raw)return clone(defaultState);const parsed=JSON.parse(raw);return deepMerge(clone(defaultState),parsed)}catch(e){return clone(defaultState)}}
+function deepMerge(target,source){for(const k in source){if(source[k]&&typeof source[k]==='object'&&!Array.isArray(source[k])){target[k]=deepMerge(target[k]||{},source[k])}else target[k]=source[k]}return target}
+function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));updateUI()}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._to);t._to=setTimeout(()=>t.classList.remove('show'),2600)}
+function esc(v=''){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[c]))}
+
+function startApp(){document.getElementById('startScreen').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.getElementById('floatingTools').classList.remove('hidden');restoreFields();renderFactGame();drawAllNetworks();switchTab(state.currentTab||'case1',false);updateUI()}
+document.getElementById('startForm').addEventListener('submit',e=>{e.preventDefault();const name=document.getElementById('investigatorName').value.trim();const password=document.getElementById('investigatorPassword').value.trim();if(!name||!password){toast('Name and password are required.');return}if(state.started && state.profile.password && state.profile.password!==password){toast('Incorrect password for this saved investigation.');return}state.profile={name,group:document.getElementById('groupClass').value.trim(),team:document.getElementById('teamName').value.trim(),password};state.started=true;saveState();startApp()});
+if(state.started){
+document.getElementById('investigatorName').value=state.profile.name;
+document.getElementById('groupClass').value=state.profile.group;
+document.getElementById('teamName').value=state.profile.team;
+document.getElementById('loginButton').textContent='CONTINUE SAVED INVESTIGATION →';
+document.querySelector('.start-note').innerHTML='A saved investigation was found on this device. Enter the password you created to continue.';
+}
+
+function switchTab(tab,scroll=true){
+  state.currentTab=tab;saveStateLite();document.querySelectorAll('.case-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(tab+'Panel').classList.add('active');const btn=[...document.querySelectorAll('.nav-tab')].find(b=>b.dataset.tab===tab);if(btn)btn.classList.add('active');activeCase=tab;if(tab==='report')generateReport();if(scroll)window.scrollTo({top:0,behavior:'smooth'});;
+}
+document.querySelectorAll('.nav-tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+
+function saveStateLite(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
+function saveField(key,value,caseNum){state.answers[key]=value;if(caseNum)state.answers['touched_case_'+caseNum]=true;saveState();}
+document.addEventListener('input',e=>{const key=e.target.dataset.save;if(key){state.answers[key]=e.target.value;saveStateLite();if(e.target.dataset.case)updateCaseChecks(+e.target.dataset.case)}});
+document.addEventListener('change',e=>{const key=e.target.dataset.save;if(key){state.answers[key]=e.target.value;saveState();}});
+function restoreFields(){document.querySelectorAll('[data-save]').forEach(el=>{const k=el.dataset.save;if(state.answers[k]!==undefined)el.value=state.answers[k]});document.getElementById('notebookText').value=state.notebook||'';for(let i=1;i<=4;i++){if(state.caseCompleted[i])document.getElementById('c'+i+'Complete')?.classList.add('show')}}
+
+function setAnswer(key,val,caseNum){state.answers[key]=val;saveState();if(caseNum)updateCaseChecks(caseNum)}
+function toggleEvidence(id,caseNum,key){document.getElementById(id).classList.toggle('hidden');setAnswer(key,true,caseNum);toast('Evidence unlocked and added to the case file.')}
+function showNetwork(id,caseNum){document.getElementById(id).classList.remove('hidden');setAnswer('c'+caseNum+'_network',true,caseNum);setTimeout(()=>drawAllNetworks(),100)}
+function selectTool(btn,group,key,caseNum){document.querySelectorAll('#'+group+' .tool-btn').forEach(x=>x.classList.remove('selected'));btn.classList.add('selected');setAnswer(key,btn.dataset.value,caseNum);const correctMap={c1_methodEvidence:'Observation',c1_nextTool:'Interview',c2_initial:'Sociogram',c2_follow:'Interview',c3_initial:'Observation',c4_initial:'Sociogram'};if(correctMap[key])scoreObjective(key,btn.dataset.value===correctMap[key]);}
+function toggleTag(btn,caseNum){btn.classList.toggle('active');const vals=[...document.querySelectorAll('#c3tags .tag.active')].map(x=>x.textContent.trim());setAnswer('c3_tags',vals,caseNum)}
+function checkRadio(group,correct,feedbackId,caseNum,custom=''){const chosen=document.querySelector('input[name="'+group+'"]:checked');if(!chosen){toast('Select an answer first.');return}setAnswer(group,chosen.value,caseNum);const ok=chosen.value===correct;scoreObjective(group,ok);const fb=document.getElementById(feedbackId);fb.className='feedback show '+(ok?'good':'warn');fb.textContent=ok?(custom||'Supported by the available evidence.'):(custom||'Review what is directly supported by the evidence, then separate that from interpretation.');}
+function scoreObjective(key,ok){if(state.evidenceScore.scored[key])return;state.evidenceScore.scored[key]=true;state.evidenceScore.total++;if(ok)state.evidenceScore.correct++;saveStateLite()}
+function checkC1Patterns(){const vals=[...document.querySelectorAll('#c1patterns input:checked')].map(x=>x.value);setAnswer('c1patterns',vals,1);const good=['Unequal participation','Two highly active participants','Several minimally active participants','Five silent participants'];const ok=vals.length===4&&good.every(x=>vals.includes(x));scoreObjective('c1patterns',ok);const fb=document.getElementById('c1patternFb');fb.className='feedback show '+(ok?'good':'warn');fb.textContent=ok?'Correct. These are observable patterns. “Lack of knowledge” and “Fear of the professor” would require additional evidence.':'Some selected statements go beyond what the participation log can prove. Focus on documented behavior.'}
+function checkC2Patterns(){const vals=[...document.querySelectorAll('#c2patterns input:checked')].map(x=>x.value);setAnswer('c2patterns',vals,2);const ok=vals.length===2&&vals.includes('Two strong subgroups')&&vals.includes('Gabriela has weak incoming connections');scoreObjective('c2patterns',ok);const fb=document.getElementById('c2patternFb');fb.className='feedback show '+(ok?'good':'warn');fb.textContent=ok?'Supported. The map suggests two cohesive subgroups and weak incoming connection for Gabriela.':'Re-check the directions of the collaboration choices and look for repeated clusters.'}
+function revealInterview(caseNum,name,btn){state.interviews[caseNum]=state.interviews[caseNum]||[];if(!state.interviews[caseNum].includes(name)){if(state.interviews[caseNum].length>=2){toast('You already selected two interviews for this case.');return}state.interviews[caseNum].push(name)}btn.nextElementSibling.classList.remove('hidden');btn.closest('.person-card').classList.add('selected');setAnswer('interviews'+caseNum,state.interviews[caseNum],caseNum);saveState()}
+function revealSingleQuote(btn,caseNum,name){btn.nextElementSibling.classList.remove('hidden');state.interviews[caseNum]=state.interviews[caseNum]||[];if(!state.interviews[caseNum].includes(name))state.interviews[caseNum].push(name);setAnswer('interviews'+caseNum,state.interviews[caseNum],caseNum)}
+
+function renderFactGame(){const host=document.getElementById('factGame3');if(host.dataset.rendered)return;host.dataset.rendered='1';factStatements.forEach((s,i)=>{const row=document.createElement('div');row.className='card';row.style.boxShadow='none';row.style.padding='14px';row.innerHTML=`<div style="font-weight:800;margin-bottom:9px">${i+1}. ${esc(s.text)}</div><div class="tool-select" style="grid-template-columns:1fr 1fr"><button class="tool-btn" onclick="answerFact(${i},'Observation',this)"><strong>OBSERVATION</strong><small>Directly documented behavior</small></button><button class="tool-btn" onclick="answerFact(${i},'Interpretation',this)"><strong>INTERPRETATION</strong><small>Meaning or judgment inferred from evidence</small></button></div><div class="feedback" id="factFb${i}"></div>`;host.appendChild(row);const saved=state.answers['fact3_'+i];if(saved){const b=[...row.querySelectorAll('.tool-btn')].find(x=>x.textContent.includes(saved.toUpperCase()));if(b)b.classList.add('selected')}})}
+function answerFact(i,val,btn){btn.parentElement.querySelectorAll('.tool-btn').forEach(x=>x.classList.remove('selected'));btn.classList.add('selected');setAnswer('fact3_'+i,val,3);const ok=val===factStatements[i].answer;scoreObjective('fact3_'+i,ok);const fb=document.getElementById('factFb'+i);fb.className='feedback show '+(ok?'good':'warn');fb.textContent=ok?'Correct classification.':'This statement adds an interpretation that was not directly observed.';const done=factStatements.every((_,j)=>state.answers['fact3_'+j]);if(done)setAnswer('factGame3',true,3)}
+
+function stageDone(caseNum,key){if(key==='interviews1'||key==='interviews3')return (state.interviews[caseNum]||[]).length>=2;if(key==='interviews2')return (state.interviews[caseNum]||[]).length>=2;if(key==='factGame3')return !!state.answers.factGame3;const v=state.answers[key];if(Array.isArray(v))return v.length>0;return v!==undefined&&v!==null&&String(v).trim()!==''}
+function updateCaseChecks(caseNum){const host=document.getElementById('checks'+caseNum);if(!host)return;host.innerHTML='';stageRequirements[caseNum].forEach(([label,key])=>{const done=stageDone(caseNum,key);const d=document.createElement('div');d.className='case-check '+(done?'complete':'');d.innerHTML=`<span>${esc(label)}</span><span class="check-indicator">${done?'✓':''}</span>`;host.appendChild(d)});}
+function completeCase(caseNum){const req=stageRequirements[caseNum];const done=req.filter(([,k])=>stageDone(caseNum,k)).length;if(done<Math.ceil(req.length*.7)){toast('Complete more of the case file before closing it.');return}state.caseCompleted[caseNum]=true;document.getElementById('c'+caseNum+'Complete').classList.add('show');saveState();toast('Case '+String(caseNum).padStart(2,'0')+' closed.');}
+function updateUI(){for(let i=1;i<=4;i++)updateCaseChecks(i);const solved=Object.values(state.caseCompleted).filter(Boolean).length;document.getElementById('overallStatus').textContent='Cases solved: '+solved+'/4';document.getElementById('overallProgress').style.width=(solved/4*100)+'%';document.querySelectorAll('.nav-tab').forEach(b=>{const m=b.dataset.tab.match(/case(\d)/);if(m&&state.caseCompleted[m[1]])b.classList.add('done');else if(m)b.classList.remove('done')});}
+
+
+function toggleNotebook(){document.getElementById('notebook').classList.toggle('open');document.getElementById('notebookText').value=state.notebook||''}
+function saveNotebook(){state.notebook=document.getElementById('notebookText').value;saveStateLite();toast('Notebook saved.')}
+function openToolkit(){document.getElementById('toolkitModal').classList.add('show')}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+
+function openFacilitator(){
+  const code=prompt('Enter facilitator code:');if(code===null)return;if(code!=='GDIU2026'){toast('Incorrect facilitator code.');return}
+  document.getElementById('facilitatorBody').innerHTML=`
+    <div class="facilitator-box"><strong>CASE 01</strong><p><b>Primary:</b> Observation documents the participation pattern. <b>Follow-up:</b> Interview to explore reasons. <b>Key principle:</b> silence does not prove lack of understanding. Useful interventions: written thinking time, think-pair-share, smaller groups, structured turn-taking.</p></div>
+    <div class="facilitator-box"><strong>CASE 02</strong><p><b>Primary:</b> Sociogram. <b>Follow-up:</b> Interview and/or observation. <b>Key dynamics:</b> two subgroups, weak integration of Gabriela, informal communication patterns. Avoid claiming intentional exclusion without supporting evidence.</p></div>
+    <div class="facilitator-box"><strong>CASE 03</strong><p><b>Primary:</b> Observation. <b>Follow-up:</b> Interview. <b>Key dynamics:</b> unclear information flow, informal relay of instructions, role ambiguity, new-member integration, possible centralization around the supervisor.</p></div>
+    <div class="facilitator-box"><strong>CASE 04</strong><p><b>Primary:</b> Sociogram. <b>Support:</b> Interview and possible observation. <b>Key dynamics:</b> two clusters, bridge dependency, information bottleneck, strong subgroup cohesion but weaker whole-group integration.</p></div>
+    <h3>Discussion prompts</h3><p>What can each method reveal? What can it not reveal? Which conclusions are facts, which are hypotheses, and which require triangulation?</p>`;
+  document.getElementById('facilitatorModal').classList.add('show')
+}
+
+const case2Nodes={Andrea:[110,105],Bruno:[260,70],Camila:[230,210],Diego:[510,90],Elisa:[640,155],Fernando:[525,245],Gabriela:[365,330]};
+const case2Edges=[['Andrea','Bruno'],['Andrea','Camila'],['Bruno','Andrea'],['Bruno','Camila'],['Camila','Andrea'],['Camila','Bruno'],['Diego','Elisa'],['Diego','Fernando'],['Elisa','Diego'],['Elisa','Fernando'],['Fernando','Diego'],['Fernando','Elisa'],['Gabriela','Camila'],['Gabriela','Elisa']];
+const case4Nodes={Ana:[100,105],Ben:[230,70],Carla:[225,205],David:[365,165],Irene:[485,220],Emma:[610,165],Fabián:[735,80],Grace:[735,220],Hugo:[610,320]};
+const case4Edges=[['Ana','Ben'],['Ana','Carla'],['Ben','Carla'],['Carla','David'],['Emma','Fabián'],['Emma','Grace'],['Fabián','Grace'],['Grace','Hugo'],['David','Irene'],['Irene','Emma']];
+function countDegrees(nodes,edges){const inc={},out={};Object.keys(nodes).forEach(n=>inc[n]=out[n]=0);edges.forEach(([a,b])=>{out[a]++;inc[b]++;if(edges.some(e=>e[0]===b&&e[1]===a)){/* mutual already represented directionally if present */}});return{inc,out}}
+function drawNetwork(svgId,nodes,edges,caseNum){const svg=document.getElementById(svgId);if(!svg)return;svg.setAttribute('viewBox','0 0 840 400');svg.innerHTML='';const NS='http://www.w3.org/2000/svg';const defs=document.createElementNS(NS,'defs');defs.innerHTML='<marker id="arrow'+caseNum+'" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2c827f"/></marker>';svg.appendChild(defs);const deg=countDegrees(nodes,edges);
+  edges.forEach(([a,b])=>{const line=document.createElementNS(NS,'line');line.setAttribute('x1',nodes[a][0]);line.setAttribute('y1',nodes[a][1]);line.setAttribute('x2',nodes[b][0]);line.setAttribute('y2',nodes[b][1]);line.setAttribute('class','edge '+(caseNum===4&&(a==='David'||a==='Irene'||b==='Irene'||b==='Emma')?'bridge':'pref'));if(caseNum===2)line.setAttribute('marker-end','url(#arrow2)');svg.appendChild(line)});
+  Object.entries(nodes).forEach(([name,[x,y]])=>{const g=document.createElementNS(NS,'g');g.setAttribute('class','node');g.setAttribute('tabindex','0');g.setAttribute('transform',`translate(${x} ${y})`);const halo=document.createElementNS(NS,'circle');halo.setAttribute('class','halo');halo.setAttribute('r','34');const c=document.createElementNS(NS,'circle');c.setAttribute('r','25');const t=document.createElementNS(NS,'text');t.textContent=name;g.append(halo,c,t);const show=e=>showTooltip(e,name,deg.inc[name],deg.out[name],caseNum);g.addEventListener('mouseenter',show);g.addEventListener('mousemove',show);g.addEventListener('mouseleave',hideTooltip);g.addEventListener('focus',show);g.addEventListener('blur',hideTooltip);svg.appendChild(g)});
+}
+let tooltip=null;
+function showTooltip(e,name,inc,out,caseNum){if(!tooltip){tooltip=document.createElement('div');tooltip.className='network-tooltip';document.body.appendChild(tooltip)}let role='Network member';if(caseNum===4&&name==='Irene')role='Potential bridge between clusters';if(caseNum===2&&name==='Gabriela')role='Weak incoming connection pattern';tooltip.innerHTML=`<strong>${esc(name)}</strong><br>Incoming: ${inc}<br>Outgoing: ${out}<br>${role}`;tooltip.style.display='block';const x=(e.clientX||window.innerWidth/2)+12,y=(e.clientY||200)+12;tooltip.style.left=x+'px';tooltip.style.top=y+'px'}
+function hideTooltip(){if(tooltip)tooltip.style.display='none'}
+function drawAllNetworks(){drawNetwork('svg2',case2Nodes,case2Edges,2);drawNetwork('svg4',case4Nodes,case4Edges,4)}
+
+function getCompletionPercent(){let total=0,done=0;for(let c=1;c<=4;c++){stageRequirements[c].forEach(([,k])=>{total++;if(stageDone(c,k))done++})}for(let i=1;i<=6;i++){total++;if((state.answers['reflection_'+i]||'').trim())done++}return Math.round(done/total*100)}
+function reasoningCount(){const keys=['c1_diagnosis','c2_diagnosis','c3_diagnosis','c4_diagnosis'];return keys.filter(k=>(state.answers[k]||'').trim()).length}
+function recommendationCount(){const keys=['c1_recommendation','c2_recommendation','c3_recommendation','c4_recommendation'];return keys.filter(k=>(state.answers[k]||'').trim()).length}
+function evidenceAccuracy(){return state.evidenceScore.total?Math.round(state.evidenceScore.correct/state.evidenceScore.total*100):0}
+function evidenceSummary(caseNum){const map={1:[state.answers.c1q1,(state.answers.c1patterns||[]).join(', '),state.answers.c1_methodEvidence],2:[state.answers.c2fewest,(state.answers.c2patterns||[]).join(', '),state.answers.c2_follow],3:[(state.answers.c3_tags||[]).join(', '),'Fact vs interpretation activity completed: '+(state.answers.factGame3?'Yes':'No')],4:['Bridge: '+(state.answers.c4_bridgePerson||''),state.answers.c4_bridgeRisk]};return (map[caseNum]||[]).filter(Boolean).join(' · ')||'Not yet recorded.'}
+function observedProblem(caseNum){const map={1:'Unequal participation during whole-class discussion and a possible mismatch between silence and actual understanding.',2:'Low contribution by Gabriela alongside a team that appears outwardly conflict-free.',3:'Service delays and inconsistent information during a busy shift.',4:'Duplicated tasks and fragmented information despite polite, friendly meetings.'};return map[caseNum]}
+function generateReport(){
+  const p=state.profile;const pct=getCompletionPercent();const solved=Object.values(state.caseCompleted).filter(Boolean).length;const names=['','THE CLASSROOM OF SILENCE','THE INVISIBLE TEAMMATE','THE CHAOTIC SHIFT','THE COMMITTEE WITH TWO WORLDS'];let cases='';
+  for(let c=1;c<=4;c++){cases+=`<section class="report-case"><h3>CASE 0${c} — ${names[c]}</h3><div class="report-grid"><div class="report-item"><strong>Observed problem</strong>${esc(observedProblem(c))}</div><div class="report-item"><strong>Evidence identified</strong>${esc(evidenceSummary(c))}</div><div class="report-item"><strong>Primary evaluation technique</strong>${esc(state.answers['c'+c+'_primary']||'Not recorded')}</div><div class="report-item"><strong>Secondary technique</strong>${esc(state.answers['c'+c+'_secondary']||'Not recorded')}</div><div class="report-item"><strong>Diagnosis</strong>${esc(state.answers['c'+c+'_diagnosis']||'Not recorded')}</div><div class="report-item"><strong>Recommended action</strong>${esc(state.answers['c'+c+'_recommendation']||'Not recorded')}</div></div></section>`}
+  let refl='<section class="report-case"><h3>Cross-Case Reflection</h3>';for(let i=1;i<=6;i++)refl+=`<p><strong>${i}.</strong> ${esc(state.answers['reflection_'+i]||'Not recorded')}</p>`;refl+='</section>';
+  document.getElementById('reportPaper').innerHTML=`<div class="report-title"><div class="case-kicker">GDIU · Final Case File</div><h2>GROUP DYNAMICS INVESTIGATION REPORT</h2><p>${new Date().toLocaleDateString()}</p></div><div class="report-meta"><div class="meta-box"><small>Investigator</small>${esc(p.name||'—')}</div><div class="meta-box"><small>Group / Class</small>${esc(p.group||'—')}</div><div class="meta-box"><small>Team Name</small>${esc(p.team||'—')}</div><div class="meta-box"><small>Cases Completed</small>${solved}/4</div><div class="meta-box"><small>Investigation Completion</small>${pct}%</div><div class="meta-box"><small>Evidence Accuracy</small>${evidenceAccuracy()}%</div></div>${cases}${refl}<div class="principle">Behavior tells us WHAT is happening.<br>Networks help us see WHO is connected.<br>Conversations help us understand WHY.<br><strong>Strong diagnosis often requires more than one source of evidence.</strong></div><section class="report-case"><h3>Investigation Summary</h3><p><strong>Evidence Analysis:</strong> ${evidenceAccuracy()}% · <strong>Diagnostic Explanations:</strong> ${reasoningCount()}/4 · <strong>Professional Recommendations:</strong> ${recommendationCount()}/4</p><p><strong>Case files closed:</strong> ${solved}/4 · <strong>Completion:</strong> ${pct}%</p></section>`;
+}
+function finalizeReport(){state.finalized=true;saveState();generateReport();toast('CASE FILES CLOSED. Final report updated.')}
+async function downloadImage(){generateReport();if(typeof html2canvas==='undefined'){toast('Image export library is unavailable. Use Print / Save Report instead.');return}toast('Preparing high-resolution image...');const canvas=await html2canvas(document.getElementById('reportPaper'),{scale:2,backgroundColor:'#ffffff',useCORS:true});const a=document.createElement('a');a.download='Group_Dynamics_Investigation_Report.png';a.href=canvas.toDataURL('image/png');a.click()}
+async function downloadPDF(){generateReport();if(typeof html2canvas==='undefined'||!window.jspdf){toast('PDF export library is unavailable. Use Print / Save Report instead.');return}toast('Preparing PDF...');const canvas=await html2canvas(document.getElementById('reportPaper'),{scale:1.7,backgroundColor:'#ffffff',useCORS:true});const img=canvas.toDataURL('image/jpeg',.92);const {jsPDF}=window.jspdf;const pdf=new jsPDF('p','mm','a4');const pw=210,ph=297;margin=10;const iw=pw-margin*2;const ih=canvas.height*iw/canvas.width;let y=margin;let left=ih;pdf.addImage(img,'JPEG',margin,y,iw,ih);left-=ph-2*margin;while(left>0){y=margin-left;pdf.addPage();pdf.addImage(img,'JPEG',margin,y,iw,ih);left-=ph-2*margin}pdf.save('Group_Dynamics_Investigation_Report.pdf')}
+function summaryText(){const pct=getCompletionPercent();return `GROUP DYNAMICS INVESTIGATION REPORT\nInvestigator: ${state.profile.name}\nGroup/Class: ${state.profile.group}\nTeam: ${state.profile.team}\nCases Closed: ${Object.values(state.caseCompleted).filter(Boolean).length}/4\nCompletion: ${pct}%\nEvidence Accuracy: ${evidenceAccuracy()}%\n\nFinal Principle: Behavior tells us WHAT is happening. Networks help us see WHO is connected. Conversations help us understand WHY. Strong diagnosis often requires more than one source of evidence.`}
+async function copySummary(){try{await navigator.clipboard.writeText(summaryText());toast('Report summary copied to clipboard.')}catch(e){fallbackCopy(summaryText())}}
+function fallbackCopy(text){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Report summary copied to clipboard.')}
+async function shareReport(){const text=summaryText();if(navigator.share){try{await navigator.share({title:'Group Dynamics Investigation Report',text});}catch(e){if(e.name!=='AbortError')toast('Sharing could not be completed.')}}else toast('Sharing is not supported by this browser. Download the PDF or copy the report summary instead.')}
+function resetInvestigation(){if(!confirm('Reset the entire investigation? This will permanently clear saved answers on this device.'))return;localStorage.removeItem(STORAGE_KEY);location.reload()}
+
+// Restore interactive selections from state
+function restoreInteractive(){
+  const radioKeys=['c1q1','c2fewest','c2lazy','c4conflict'];radioKeys.forEach(k=>{const v=state.answers[k];if(v){const el=document.querySelector(`input[name="${k}"][value="${CSS.escape(v)}"]`);if(el)el.checked=true}});
+  [['c1patterns','c1patterns'],['c2patterns','c2patterns']].forEach(([k,id])=>{const arr=state.answers[k]||[];document.querySelectorAll('#'+id+' input[type=checkbox]').forEach(x=>x.checked=arr.includes(x.value))});
+  const toolGroups={c1_methodEvidence:'c1methodEvidence',c1_nextTool:'c1nextTool',c2_initial:'c2initial',c2_follow:'c2follow',c3_initial:'c3initial',c4_initial:'c4initial'};Object.entries(toolGroups).forEach(([k,id])=>{const v=state.answers[k];if(v){[...document.querySelectorAll('#'+id+' .tool-btn')].filter(b=>b.dataset.value===v).forEach(b=>b.classList.add('selected'))}});
+  (state.answers.c3_tags||[]).forEach(v=>{[...document.querySelectorAll('#c3tags .tag')].filter(b=>b.textContent.trim()===v).forEach(b=>b.classList.add('active'))});
+  for(const [c,names] of Object.entries(state.interviews)){(names||[]).forEach(name=>{document.querySelectorAll('#c'+c+'Interviews .person-card').forEach(card=>{const b=card.querySelector('button');if(b&&b.textContent.includes(name.toUpperCase())){b.nextElementSibling?.classList.remove('hidden');card.classList.add('selected')}})})}
+  ['c1_evidenceA','c1_evidenceB','c3_timeline','c4_quotes'].forEach(k=>{if(state.answers[k]){const id={c1_evidenceA:'c1evidenceA',c1_evidenceB:'c1evidenceB',c3_timeline:'c3timeline',c4_quotes:'c4quotes'}[k];document.getElementById(id)?.classList.remove('hidden')}});if(state.answers.c2_network)document.getElementById('network2').classList.remove('hidden');if(state.answers.c4_network)document.getElementById('network4').classList.remove('hidden');
+}
+restoreInteractive();generateReport();updateUI();
+
+window.addEventListener('beforeunload',()=>{state.notebook=document.getElementById('notebookText')?.value||state.notebook;saveStateLite()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.modal-backdrop.show').forEach(m=>m.classList.remove('show'));document.getElementById('notebook').classList.remove('open')}});
+</script>
+</body>
+</html>
